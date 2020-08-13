@@ -6,14 +6,14 @@
           <v-toolbar-title>Регистрация</v-toolbar-title>
         </v-toolbar>
 
-        <v-card-text>
-          <v-form @submit.prevent="register">
+        <v-form @submit.prevent="register">
+          <v-card-text>
             <v-text-field
               label="Имя"
               name="name"
               type="text"
               v-model="user.name"
-              prepend-icon="mdi-form-textbox"
+              prepend-icon="mdi-account"
               required
             ></v-text-field>
 
@@ -50,14 +50,14 @@
               prepend-icon="mdi-lock"
               required
             ></v-text-field>
-          </v-form>
-        </v-card-text>
+          </v-card-text>
 
-        <v-card-actions>
-          <v-btn block color="primary" :loading="loading" type="submit">
-            Зарегистрироваться
-          </v-btn>
-        </v-card-actions>
+          <v-card-actions>
+            <v-btn block color="primary" :loading="loading" type="submit">
+              Зарегистрироваться
+            </v-btn>
+          </v-card-actions>
+        </v-form>
       </v-card>
     </v-row>
   </v-container>
@@ -83,7 +83,7 @@ export default {
 
         await this.$store.dispatch('auth/register', this.user)
 
-        // this.$router.push({ name: 'profile' })
+        this.$router.push({ name: 'profile' })
       } catch (e) {
         throw new Error(e)
       } finally {

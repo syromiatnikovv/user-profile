@@ -55,6 +55,7 @@ export default {
           photoURL: imageSrc,
         })
 
+        // update user in local state
         const currentUser = await firebase.auth().currentUser
         commit('setUser', {
           name: currentUser.displayName,
@@ -66,26 +67,18 @@ export default {
       }
     },
 
-    async login(qwe, user) {
+    async login(context, user) {
       try {
         await firebase
           .auth()
           .signInWithEmailAndPassword(user.email, user.password)
-
-        // const currentUser = await firebase.auth().currentUser
-        // commit('setUser', {
-        //   name: currentUser.displayName,
-        //   email: currentUser.email,
-        //   photoSrc: currentUser.photoURL,
-        // })
       } catch (e) {
         throw new Error(e)
       }
     },
 
-    async logout({ commit }) {
+    async logout() {
       await firebase.auth().signOut()
-      commit('logout')
     },
   },
 }
