@@ -7,12 +7,12 @@
         </v-toolbar>
 
         <v-card-text>
-          <v-form>
+          <v-form @submit.prevent="register">
             <v-text-field
               label="Имя"
               name="name"
               type="text"
-              v-model="name"
+              v-model="user.name"
               prepend-icon="mdi-form-textbox"
               required
             ></v-text-field>
@@ -21,27 +21,23 @@
               label="Email"
               name="email"
               type="text"
-              v-model="email"
+              v-model="user.email"
               prepend-icon="mdi-at"
               required
             ></v-text-field>
 
-            <v-file-input label="Фото" prepend-icon="mdi-camera"></v-file-input>
-
-            <v-text-field
-              label="Логин"
-              name="login"
-              type="text"
-              v-model="login"
-              prepend-icon="mdi-account"
-              required
-            ></v-text-field>
+            <v-file-input
+              label="Фото"
+              accept="image/*"
+              v-model="user.photo"
+              prepend-icon="mdi-camera"
+            ></v-file-input>
 
             <v-text-field
               label="Пароль"
               name="password"
               type="password"
-              v-model="password"
+              v-model="user.password"
               prepend-icon="mdi-lock"
               required
             ></v-text-field>
@@ -50,7 +46,7 @@
               label="Повторите пароль"
               name="passwordConfirmation"
               type="password"
-              v-model="passwordConfirmation"
+              v-model="user.passwordConfirmation"
               prepend-icon="mdi-lock"
               required
             ></v-text-field>
@@ -58,7 +54,7 @@
         </v-card-text>
 
         <v-card-actions>
-          <v-btn block color="primary" type="submit">
+          <v-btn block color="primary" :loading="loading" type="submit">
             Зарегистрироваться
           </v-btn>
         </v-card-actions>
@@ -70,11 +66,30 @@
 <script>
 export default {
   data: () => ({
-    name: '',
-    email: '',
-    login: '',
-    password: '',
-    passwordConfirmation: '',
+    user: {
+      name: '',
+      email: '',
+      photo: null,
+      password: '',
+      passwordConfirmation: '',
+    },
+    loading: false,
   }),
+
+  methods: {
+    async register() {
+      try {
+        this.loading = true
+
+        await this.$store.dispatch('auth/register', this.user)
+
+        // this.$router.push({ name: 'profile' })
+      } catch (e) {
+        throw new Error(e)
+      } finally {
+        this.loading = false
+      }
+    },
+  },
 }
 </script>
