@@ -6,14 +6,14 @@
           <v-toolbar-title>Войти</v-toolbar-title>
         </v-toolbar>
 
-        <v-form>
+        <v-form @submit.prevent="login">
           <v-card-text>
             <v-text-field
-              label="Логин"
-              name="login"
+              label="Email"
+              name="email"
               prepend-icon="mdi-account"
               type="text"
-              v-model="login"
+              v-model="email"
               required
               autofocus
             ></v-text-field>
@@ -26,12 +26,12 @@
               v-model="password"
               required
             ></v-text-field>
-
-            <v-checkbox v-model="remember" label="Запомнить меня"></v-checkbox>
           </v-card-text>
 
           <v-card-actions>
-            <v-btn block color="primary" type="submit">Войти</v-btn>
+            <v-btn block color="primary" :loading="loading" type="submit"
+              >Войти</v-btn
+            >
           </v-card-actions>
         </v-form>
       </v-card>
@@ -42,9 +42,30 @@
 <script>
 export default {
   data: () => ({
-    login: '',
+    email: '',
     password: '',
-    remember: false,
+    loading: false,
   }),
+
+  methods: {
+    async login() {
+      try {
+        this.loading = true
+
+        const user = {
+          email: this.email,
+          password: this.password,
+        }
+
+        await this.$store.dispatch('auth/login', user)
+
+        this.$router.push({ name: 'profile' })
+      } catch (e) {
+        throw new Error(e)
+      } finally {
+        this.loading = false
+      }
+    },
+  },
 }
 </script>

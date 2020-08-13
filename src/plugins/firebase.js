@@ -1,4 +1,5 @@
 import * as firebase from 'firebase/app'
+import store from '@/store'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDPQVce3W3U0dB4mTbxTxfdY4WB25C3mf0',
@@ -11,3 +12,15 @@ const firebaseConfig = {
 }
 
 firebase.initializeApp(firebaseConfig)
+
+firebase.auth().onAuthStateChanged(function(user) {
+  if (user) {
+    store.commit('auth/setUser', {
+      name: user.displayName,
+      email: user.email,
+      photoSrc: user.photoURL,
+    })
+  } else {
+    store.commit('auth/logout')
+  }
+})

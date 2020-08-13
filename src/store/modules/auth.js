@@ -18,6 +18,10 @@ export default {
     setUser(state, user) {
       state.user = user
     },
+
+    logout(state) {
+      state.user = null
+    },
   },
 
   actions: {
@@ -52,16 +56,36 @@ export default {
         })
 
         const currentUser = await firebase.auth().currentUser
-        const newUser = {
+        commit('setUser', {
           name: currentUser.displayName,
           email: currentUser.email,
           photoSrc: currentUser.photoURL,
-        }
-
-        commit('setUser', newUser)
+        })
       } catch (e) {
         throw new Error(e)
       }
+    },
+
+    async login(qwe, user) {
+      try {
+        await firebase
+          .auth()
+          .signInWithEmailAndPassword(user.email, user.password)
+
+        // const currentUser = await firebase.auth().currentUser
+        // commit('setUser', {
+        //   name: currentUser.displayName,
+        //   email: currentUser.email,
+        //   photoSrc: currentUser.photoURL,
+        // })
+      } catch (e) {
+        throw new Error(e)
+      }
+    },
+
+    async logout({ commit }) {
+      await firebase.auth().signOut()
+      commit('logout')
     },
   },
 }
