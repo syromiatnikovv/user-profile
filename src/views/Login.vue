@@ -14,6 +14,8 @@
               prepend-icon="mdi-account"
               type="text"
               v-model="email"
+              :error-messages="emailErrors"
+              @blur="$v.email.$touch()"
               required
               autofocus
             ></v-text-field>
@@ -24,6 +26,8 @@
               prepend-icon="mdi-lock"
               type="password"
               v-model="password"
+              :error-messages="passwordErrors"
+              @blur="$v.password.$touch()"
               required
             ></v-text-field>
           </v-card-text>
@@ -40,30 +44,66 @@
 </template>
 
 <script>
+import { validationMixin } from 'vuelidate'
+import { required, email } from 'vuelidate/lib/validators'
+
 export default {
+  mixins: [validationMixin],
+
+  validations: {
+    email: { required, email },
+    password: { required },
+  },
+
   data: () => ({
     email: '',
     password: '',
+
     loading: false,
   }),
 
+  computed: {
+    emailErrors() {
+      const errors = []
+
+      if (!this.$v.email.$dirty) return errors
+      !this.$v.email.email && errors.push('Некорректный email!')
+      !this.$v.email.required && errors.push('Введите email!')
+
+      return errors
+    },
+
+    passwordErrors() {
+      const errors = []
+
+      if (!this.$v.password.$dirty) return errors
+      !this.$v.password.required && errors.push('Введите пароль!')
+
+      return errors
+    },
+  },
+
   methods: {
     async login() {
-      try {
-        this.loading = true
+      this.$v.$touch()
 
-        const user = {
-          email: this.email,
-          password: this.password,
+      if (!this.$v.$invalid) {
+        try {
+          this.loading = true
+
+          const user = {
+            email: this.email,
+            password: this.password,
+          }
+
+          await this.$store.dispatch('auth/login', user)
+
+          this.$router.push({ name: 'profile' })
+        } catch (e) {
+          throw new Error(e)
+        } finally {
+          this.loading = false
         }
-
-        await this.$store.dispatch('auth/login', user)
-
-        this.$router.push({ name: 'profile' })
-      } catch (e) {
-        throw new Error(e)
-      } finally {
-        this.loading = false
       }
     },
   },

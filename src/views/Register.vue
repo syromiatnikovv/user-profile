@@ -12,7 +12,9 @@
               label="Имя"
               name="name"
               type="text"
-              v-model="user.name"
+              v-model="name"
+              :error-messages="nameErrors"
+              @blur="$v.name.$touch()"
               prepend-icon="mdi-account"
               required
             ></v-text-field>
@@ -21,7 +23,9 @@
               label="Email"
               name="email"
               type="text"
-              v-model="user.email"
+              v-model="email"
+              :error-messages="emailErrors"
+              @blur="$v.email.$touch()"
               prepend-icon="mdi-at"
               required
             ></v-text-field>
@@ -29,7 +33,9 @@
             <v-file-input
               label="Фото"
               accept="image/*"
-              v-model="user.photo"
+              v-model="photo"
+              :error-messages="photoErrors"
+              @blur="$v.photo.$touch()"
               prepend-icon="mdi-camera"
             ></v-file-input>
 
@@ -37,16 +43,20 @@
               label="Пароль"
               name="password"
               type="password"
-              v-model="user.password"
+              v-model="password"
+              :error-messages="passwordErrors"
+              @blur="$v.password.$touch()"
               prepend-icon="mdi-lock"
               required
             ></v-text-field>
 
             <v-text-field
               label="Повторите пароль"
-              name="passwordConfirmation"
+              name="passwordConfirm"
               type="password"
-              v-model="user.passwordConfirmation"
+              v-model="passwordConfirm"
+              :error-messages="passwordConfirmErrors"
+              @blur="$v.passwordConfirm.$touch()"
               prepend-icon="mdi-lock"
               required
             ></v-text-field>
@@ -64,30 +74,105 @@
 </template>
 
 <script>
+import { validationMixin } from 'vuelidate'
+import { required, email, minLength, sameAs } from 'vuelidate/lib/validators'
+
 export default {
+  mixins: [validationMixin],
+
+  validations: {
+    name: { required, minLength: minLength(6) },
+    email: { required, email },
+    photo: { required },
+    password: { required, minLength: minLength(6) },
+    passwordConfirm: { required, sameAsPassword: sameAs('password') },
+  },
+
   data: () => ({
-    user: {
-      name: '',
-      email: '',
-      photo: null,
-      password: '',
-      passwordConfirmation: '',
-    },
+    name: '',
+    email: '',
+    photo: null,
+    password: '',
+    passwordConfirm: '',
+
     loading: false,
   }),
 
+  computed: {
+    nameErrors() {
+      const errors = []
+
+      if (!this.$v.name.$dirty) return errors
+      !this.$v.name.minLength && errors.push('Введите минимум 6 символов!')
+      !this.$v.name.required && errors.push('Введите имя!')
+
+      return errors
+    },
+
+    emailErrors() {
+      const errors = []
+
+      if (!this.$v.email.$dirty) return errors
+      !this.$v.email.email && errors.push('Некорректный email!')
+      !this.$v.email.required && errors.push('Введите email!')
+
+      return errors
+    },
+
+    photoErrors() {
+      const errors = []
+
+      if (!this.$v.photo.$dirty) return errors
+      !this.$v.photo.required && errors.push('Выберите фото!')
+
+      return errors
+    },
+
+    passwordErrors() {
+      const errors = []
+
+      if (!this.$v.password.$dirty) return errors
+      !this.$v.password.minLength && errors.push('Введите минимум 6 символов!')
+      !this.$v.password.required && errors.push('Введите пароль!')
+
+      return errors
+    },
+
+    passwordConfirmErrors() {
+      const errors = []
+
+      if (!this.$v.passwordConfirm.$dirty) return errors
+      !this.$v.passwordConfirm.required && errors.push('Повторите пароль!')
+      !this.$v.passwordConfirm.sameAsPassword && errors.push('Не совпадает!')
+
+      return errors
+    },
+  },
+
   methods: {
     async register() {
-      try {
-        this.loading = true
+      this.$v.$touch()
 
-        await this.$store.dispatch('auth/register', this.user)
+      if (!this.$v.$invalid) {
+        try {
+          this.loading = true
 
-        this.$router.push({ name: 'profile' })
-      } catch (e) {
-        throw new Error(e)
-      } finally {
-        this.loading = false
+          const user = {
+            name: this.name,
+            email: this.email,
+            photo: this.photo,
+            password: this.password,
+            passwordConfirm: this.passwordConfirm,
+          }
+
+          await this.$store.dispatch('auth/register', user)
+
+          this.$router.push({ name: 'profile' })
+        } catch (e) {
+          throw new Error(e)
+        } finally {
+          this.loading = false
+        }
       }
     },
   },
