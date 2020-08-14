@@ -7,17 +7,24 @@
         <router-view></router-view>
       </v-slide-y-transition>
     </v-main>
+
+    <notification ref="notification"></notification>
   </v-app>
 </template>
 
 <script>
+import Vue from 'vue'
 import Navbar from '@/components/Navbar'
+import Notification from '@/components/Notification'
 
 export default {
-  components: { Navbar },
+  components: {
+    Navbar,
+    Notification,
+  },
 
-  data: () => ({
-    //
-  }),
+  mounted() {
+    Vue.prototype.$notification = this.$refs.notification
+  },
 }
 </script>

@@ -66,7 +66,7 @@ export default {
           photoSrc: currentUser.photoURL,
         })
       } catch (e) {
-        throw new Error(e)
+        throw e
       }
     },
 
@@ -76,27 +76,12 @@ export default {
           .auth()
           .signInWithEmailAndPassword(user.email, user.password)
       } catch (e) {
-        throw new Error(e)
+        throw e
       }
     },
 
     async logout() {
       await firebase.auth().signOut()
     },
-
-    // async getUser({ commit }) {
-    //   try {
-    //     console.log('getUser')
-    //     const currentUser = await firebase.auth().currentUser
-    //     commit('setUser', {
-    //       id: currentUser.uid,
-    //       name: currentUser.displayName,
-    //       email: currentUser.email,
-    //       photoSrc: currentUser.photoURL,
-    //     })
-    //   } catch (e) {
-    //     console.log('qwe')
-    //   }
-    // },
   },
 }

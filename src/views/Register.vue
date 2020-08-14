@@ -76,6 +76,7 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, email, minLength, sameAs } from 'vuelidate/lib/validators'
+import errorsLocalization from '@/utils/errorsLocalization'
 
 export default {
   mixins: [validationMixin],
@@ -168,8 +169,9 @@ export default {
           await this.$store.dispatch('auth/register', user)
 
           this.$router.push({ name: 'profile' })
+          this.$notification.success('Благодарим за регистрацию!')
         } catch (e) {
-          throw new Error(e)
+          this.$notification.error(errorsLocalization[e.code] || e.message)
         } finally {
           this.loading = false
         }

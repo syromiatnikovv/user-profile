@@ -41,8 +41,11 @@ export default {
         await this.$store.dispatch('auth/logout')
 
         this.$router.push({ name: 'login' })
+        this.$notification.success(
+          'Вы успешно вышли из системы. Ждем Вас снова!'
+        )
       } catch (e) {
-        throw new Error(e)
+        throw e
       } finally {
         this.loading = false
       }
