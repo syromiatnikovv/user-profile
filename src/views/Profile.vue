@@ -7,8 +7,17 @@
         </v-toolbar>
 
         <v-card-title class="justify-center">
-          <v-avatar class="profile" color="grey" size="200">
-            <v-img :src="user.photoSrc"></v-img>
+          <v-avatar class="profile" color="grey lighten-2" size="200">
+            <v-img :src="user.photoSrc">
+              <template v-slot:placeholder>
+                <v-row class="fill-height ma-0" align="center" justify="center">
+                  <v-progress-circular
+                    indeterminate
+                    color="grey lighten-5"
+                  ></v-progress-circular>
+                </v-row>
+              </template>
+            </v-img>
           </v-avatar>
         </v-card-title>
 

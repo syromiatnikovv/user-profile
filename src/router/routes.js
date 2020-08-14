@@ -15,6 +15,10 @@ const routes = [
     meta: { requireAuth: true },
     component: () => import('@/views/Profile.vue'),
   },
+  {
+    path: '*',
+    redirect: { name: 'profile' },
+  },
 ]
 
 export default routes

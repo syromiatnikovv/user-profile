@@ -11,7 +11,7 @@
             <v-text-field
               label="Email"
               name="email"
-              prepend-icon="mdi-account"
+              prepend-icon="mdi-at"
               type="text"
               v-model="email"
               :error-messages="emailErrors"
