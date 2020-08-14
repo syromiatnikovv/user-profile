@@ -11,16 +11,18 @@ export default {
 
   getters: {
     user: (state) => state.user,
-    isLoggedIn: (state) => !!state.user,
+    isLoggedIn: (state) => !!state.user || !!window.localStorage.getItem('uid'),
   },
 
   mutations: {
     setUser(state, user) {
       state.user = user
+      window.localStorage.setItem('uid', user.id)
     },
 
     logout(state) {
       state.user = null
+      window.localStorage.removeItem('uid')
     },
   },
 
@@ -58,6 +60,7 @@ export default {
         // update user in local state
         const currentUser = await firebase.auth().currentUser
         commit('setUser', {
+          id: currentUser.uid,
           name: currentUser.displayName,
           email: currentUser.email,
           photoSrc: currentUser.photoURL,
@@ -80,5 +83,20 @@ export default {
     async logout() {
       await firebase.auth().signOut()
     },
+
+    // async getUser({ commit }) {
+    //   try {
+    //     console.log('getUser')
+    //     const currentUser = await firebase.auth().currentUser
+    //     commit('setUser', {
+    //       id: currentUser.uid,
+    //       name: currentUser.displayName,
+    //       email: currentUser.email,
+    //       photoSrc: currentUser.photoURL,
+    //     })
+    //   } catch (e) {
+    //     console.log('qwe')
+    //   }
+    // },
   },
 }

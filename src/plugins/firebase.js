@@ -16,6 +16,7 @@ firebase.initializeApp(firebaseConfig)
 firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
     store.commit('auth/setUser', {
+      id: user.uid,
       name: user.displayName,
       email: user.email,
       photoSrc: user.photoURL,
